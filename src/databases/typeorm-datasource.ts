@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
+import { Player } from "../models/typeorm/Player";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -17,7 +18,7 @@ export const AppDataSource = new DataSource({
   port: 3306,
   synchronize: true,
   logging: false,
-  entities: [], // TODO
+  entities: [Player], // TODO
   migrations: [], // TODO
   subscribers: [], // TODO
 });
