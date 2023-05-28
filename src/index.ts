@@ -11,6 +11,7 @@ import { sqlConnect } from "./databases/sql-db";
 import { languagesRouter } from "./routes/languages.routes";
 import { AppDataSource } from "./databases/typeorm-datasource";
 import { playerRouter } from "./routes/player.routes";
+import { teamRouter } from "./routes/team.routes";
 
 const main = async (): Promise<void> => {
   // Conexión a la BBDD
@@ -56,6 +57,7 @@ const main = async (): Promise<void> => {
   app.use("/brand", brandRouter);
   app.use("/languages", languagesRouter);
   app.use("/player", playerRouter);
+  app.use("/team", teamRouter);
   app.use("/public", express.static("public"));
   app.use("/", router);
 

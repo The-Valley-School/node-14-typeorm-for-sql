@@ -7,7 +7,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "start": "ts-node-dev --inspect -- ./src/index.ts",
-    "seed:player": "ts-node-dev ./src/seeds/Player.seed.ts --ignore-watch",
+    "seed:team-and-player": "ts-node-dev ./src/seeds/team-and-player.seed.ts --ignore-watch",
     "start:pro": "npm run build && node ./dist/index.js",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",

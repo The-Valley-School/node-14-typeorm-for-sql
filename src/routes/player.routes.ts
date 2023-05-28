@@ -4,8 +4,10 @@ import { Router, type NextFunction, type Request, type Response } from "express"
 import { Player } from "../models/typeorm/Player";
 import { AppDataSource } from "../databases/typeorm-datasource";
 import { type Repository } from "typeorm";
+import { Team } from "../models/typeorm/Team";
 
 const playerRepository: Repository<Player> = AppDataSource.getRepository(Player);
+const teamRepository: Repository<Team> = AppDataSource.getRepository(Team);
 
 // Router
 export const playerRouter = Router();
@@ -13,7 +15,7 @@ export const playerRouter = Router();
 // CRUD: READ
 playerRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const players: Player[] = await playerRepository.find();
+    const players: Player[] = await playerRepository.find({ relations: ["team"] });
     res.json(players);
   } catch (error) {
     next(error);
@@ -28,6 +30,7 @@ playerRouter.get("/:id", async (req: Request, res: Response, next: NextFunction)
       where: {
         id: idReceivedInParams,
       },
+      relations: ["team"],
     });
 
     if (!player) {
@@ -46,11 +49,25 @@ playerRouter.post("/", async (req: Request, res: Response, next: NextFunction) =
     // Construimos player
     const newPlayer = new Player();
 
+    let teamOfPlayer;
+
+    if (req.body.teamId) {
+      teamOfPlayer = await teamRepository.findOne({
+        where: {
+          id: req.body.teamId,
+        },
+      });
+
+      if (!teamOfPlayer) {
+        res.status(404).json({ error: "Team not found" });
+        return;
+      }
+    }
+
     // Asignamos valores
     Object.assign(newPlayer, {
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      shirtNumber: req.body.shirtNumber,
+      ...req.body,
+      team: teamOfPlayer,
     });
 
     const playerSaved = await playerRepository.save(newPlayer);
@@ -92,8 +109,26 @@ playerRouter.put("/:id", async (req: Request, res: Response, next: NextFunction)
     if (!playerToUpdate) {
       res.status(404).json({ error: "Player not found" });
     } else {
+      let teamOfPlayer;
+
+      if (req.body.teamId) {
+        teamOfPlayer = await teamRepository.findOne({
+          where: {
+            id: req.body.teamId,
+          },
+        });
+
+        if (!teamOfPlayer) {
+          res.status(404).json({ error: "Team not found" });
+          return;
+        }
+      }
+
       // Asignamos valores
-      Object.assign(playerToUpdate, req.body);
+      Object.assign(playerToUpdate, {
+        ...req.body,
+        team: teamOfPlayer,
+      });
 
       const updatedPlayer = await playerRepository.save(playerToUpdate);
       res.json(updatedPlayer);

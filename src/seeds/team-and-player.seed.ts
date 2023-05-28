@@ -1,15 +1,17 @@
 
 import { AppDataSource } from "../databases/typeorm-datasource";
 import { Player } from "../models/typeorm/Player";
+import { Team } from "../models/typeorm/Team";
 
-export const playerSeed = async (): Promise<void> => {
+export const teamAndPlayerSeed = async (): Promise<void> => {
   // Nos conectamos a la BBDD
   const dataSource = await AppDataSource.initialize();
   console.log(`Tenemos conexión!! Conectados a ${dataSource?.options?.database as string}`);
 
   // Eliminamos los datos existentes
   await AppDataSource.manager.delete(Player, {});
-  console.log("Eliminados jugadores existentes");
+  await AppDataSource.manager.delete(Team, {});
+  console.log("Eliminados jugadores y equipos");
 
   // Creamos dos players
   const player1 = {
@@ -29,14 +31,27 @@ export const playerSeed = async (): Promise<void> => {
   const player2Entity = AppDataSource.manager.create(Player, player2);
 
   // Las guardamos en base de datos
-  await AppDataSource.manager.save(player1Entity);
-  await AppDataSource.manager.save(player2Entity);
+  // await AppDataSource.manager.save(player1Entity);
+  // await AppDataSource.manager.save(player2Entity);
 
-  console.log("Creados los dos jugadores");
+  // Creamos equipo
+  const team = {
+    name: "Dream Team",
+    city: "Madrid",
+    players: [player1Entity, player2Entity]
+  };
+
+  // Creamos entidad equipo
+  const teamEntity = AppDataSource.manager.create(Team, team);
+
+  // Guardamos el equipo en BBDD
+  await AppDataSource.manager.save(teamEntity);
+
+  console.log("Creados los dos jugadores y equipo");
 
   // Cerramos la conexión
   await AppDataSource.destroy();
   console.log("Cerrada conexión SQL");
 }
 
-void playerSeed();
+void teamAndPlayerSeed();

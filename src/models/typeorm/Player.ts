@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { Team } from "./Team";
 
 @Entity()
 export class Player {
@@ -13,4 +14,7 @@ export class Player {
 
   @Column()
     shirtNumber: number;
+
+  @ManyToOne(type => Team, team => team.players)
+    team: Team;
 }

@@ -2,6 +2,7 @@ import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { Player } from "../models/typeorm/Player";
 import dotenv from "dotenv";
+import { Team } from "../models/typeorm/Team";
 dotenv.config();
 
 const SQL_HOST: string = process.env.SQL_HOST as string;
@@ -18,7 +19,7 @@ export const AppDataSource = new DataSource({
   port: 3306,
   synchronize: true,
   logging: false,
-  entities: [Player], // TODO
+  entities: [Player, Team], // TODO
   migrations: [], // TODO
   subscribers: [], // TODO
 });
